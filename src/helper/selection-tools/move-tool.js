@@ -1,12 +1,11 @@
 import paper from '@scratch/paper';
 import Modes, {BitmapModes} from '../../lib/modes';
 import {isGroup} from '../group';
-import {isCompoundPathItem, getRootItem} from '../item';
+import {getRootItem, isCompoundPathItem} from '../item';
+import {CROSSHAIR_FULL_OPACITY, getDragCrosshairLayer} from '../layer';
 import {checkPointsClose, snapDeltaToAngle} from '../math';
-import {getActionBounds, CENTER} from '../view';
-import {clearSelection, cloneSelection, getSelectedLeafItems, getSelectedRootItems, setItemSelection}
-    from '../selection';
-import {getDragCrosshairLayer, CROSSHAIR_FULL_OPACITY} from '../layer';
+import {clearSelection, cloneSelection, getSelectedLeafItems, getSelectedRootItems, setItemSelection} from '../selection';
+import {BASE, getActionBounds} from '../view';
 
 /** Snap to align selection center to rotation center within this distance */
 const SNAPPING_THRESHOLD = 4;
@@ -127,7 +126,7 @@ class MoveTool {
 
         point.x = Math.max(actionBounds.left, Math.min(point.x, actionBounds.right));
         point.y = Math.max(actionBounds.top, Math.min(point.y, actionBounds.bottom));
-        
+
         const dragVector = point.subtract(event.downPoint);
         let snapVector;
 
@@ -135,10 +134,10 @@ class MoveTool {
         if (!event.modifiers.shift && this.mode !== Modes.RESHAPE) {
             if (checkPointsClose(
                 this.selectionCenter.add(dragVector),
-                CENTER,
+                BASE.CENTER,
                 SNAPPING_THRESHOLD / paper.view.zoom /* threshold */)) {
 
-                snapVector = CENTER.subtract(this.selectionCenter);
+                snapVector = BASE.CENTER.subtract(this.selectionCenter);
             }
         }
         if (this.selectedItems.length === 0) {
@@ -167,7 +166,7 @@ class MoveTool {
                 bounds = item.bounds;
             }
         }
-        
+
         if (this.firstDrag) {
             // Show the center crosshair above the selected item while dragging.
             getDragCrosshairLayer().visible = true;
@@ -178,25 +177,25 @@ class MoveTool {
         // totally transparent outside the selection bounding box.
         let opacityMultiplier = 1;
         const newCenter = this.selectionCenter.add(dragVector);
-        if ((CENTER.y < bounds.top && CENTER.x < bounds.left) ||
-            (CENTER.y > bounds.bottom && CENTER.x < bounds.left) ||
-            (CENTER.y < bounds.top && CENTER.x > bounds.right) ||
-            (CENTER.y > bounds.bottom && CENTER.x > bounds.right)) {
+        if ((BASE.CENTER.y < bounds.top && BASE.CENTER.x < bounds.left) ||
+            (BASE.CENTER.y > bounds.bottom && BASE.CENTER.x < bounds.left) ||
+            (BASE.CENTER.y < bounds.top && BASE.CENTER.x > bounds.right) ||
+            (BASE.CENTER.y > bounds.bottom && BASE.CENTER.x > bounds.right)) {
 
             // rotation center is to one of the 4 corners of the selection bounding box
-            const distX = Math.max(CENTER.x - bounds.right, bounds.left - CENTER.x);
-            const distY = Math.max(CENTER.y - bounds.bottom, bounds.top - CENTER.y);
+            const distX = Math.max(BASE.CENTER.x - bounds.right, bounds.left - BASE.CENTER.x);
+            const distY = Math.max(BASE.CENTER.y - bounds.bottom, bounds.top - BASE.CENTER.y);
             const dist = Math.sqrt((distX * distX) + (distY * distY));
             opacityMultiplier =
                 Math.max(0, (1 - (dist / (FADE_DISTANCE / paper.view.zoom))));
-        } else if (CENTER.y < bounds.top || CENTER.y > bounds.bottom) {
+        } else if (BASE.CENTER.y < bounds.top || BASE.CENTER.y > bounds.bottom) {
             // rotation center is above or below the selection bounding box
             opacityMultiplier = Math.max(0,
-                (1 - ((Math.abs(CENTER.y - newCenter.y) - (bounds.height / 2)) / (FADE_DISTANCE / paper.view.zoom))));
-        } else if (CENTER.x < bounds.left || CENTER.x > bounds.right) {
+                (1 - ((Math.abs(BASE.CENTER.y - newCenter.y) - (bounds.height / 2)) / (FADE_DISTANCE / paper.view.zoom))));
+        } else if (BASE.CENTER.x < bounds.left || BASE.CENTER.x > bounds.right) {
             // rotation center is left or right of the selection bounding box
             opacityMultiplier = Math.max(0,
-                (1 - ((Math.abs(CENTER.x - newCenter.x) - (bounds.width / 2)) / (FADE_DISTANCE / paper.view.zoom))));
+                (1 - ((Math.abs(BASE.CENTER.x - newCenter.x) - (bounds.width / 2)) / (FADE_DISTANCE / paper.view.zoom))));
         } // else the rotation center is within selection bounds, always show drag crosshair at full opacity
         getDragCrosshairLayer().opacity = CROSSHAIR_FULL_OPACITY * opacityMultiplier;
     }

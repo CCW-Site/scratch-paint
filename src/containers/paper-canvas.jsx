@@ -1,28 +1,27 @@
+import paper from '@scratch/paper';
 import bindAll from 'lodash.bindall';
 import PropTypes from 'prop-types';
 import React from 'react';
 import {connect} from 'react-redux';
-import paper from '@scratch/paper';
-import Formats from '../lib/format';
-import log from '../log/log';
-
-import {performSnapshot} from '../helper/undo';
-import {undoSnapshot, clearUndoState} from '../reducers/undo';
 import {isGroup, ungroupItems} from '../helper/group';
 import {clearRaster, convertBackgroundGuideLayer, getRaster, setupLayers, updateTheme} from '../helper/layer';
-import {clearSelectedItems} from '../reducers/selected-items';
-import {
-    ART_BOARD_WIDTH, ART_BOARD_HEIGHT, CENTER, MAX_WORKSPACE_BOUNDS,
-    clampViewBounds, resetZoom, setWorkspaceBounds, zoomToFit, resizeCrosshair
-} from '../helper/view';
 import {ensureClockwise, scaleWithStrokes} from '../helper/math';
-import {clearHoveredItem} from '../reducers/hover';
+import {performSnapshot} from '../helper/undo';
+import {
+    BASE,
+    clampViewBounds, resetZoom, resizeCrosshair, setWorkspaceBounds, zoomToFit
+} from '../helper/view';
+import Formats from '../lib/format';
+import log from '../log/log';
 import {clearPasteOffset} from '../reducers/clipboard';
 import {changeFormat} from '../reducers/format';
+import {clearHoveredItem} from '../reducers/hover';
+import {clearSelectedItems} from '../reducers/selected-items';
+import {clearUndoState, undoSnapshot} from '../reducers/undo';
 import {updateViewBounds} from '../reducers/view-bounds';
 import {saveZoomLevel, setZoomLevelId} from '../reducers/zoom-levels';
-
 import styles from './paper-canvas.css';
+
 
 class PaperCanvas extends React.Component {
     constructor (props) {
@@ -145,7 +144,7 @@ class PaperCanvas extends React.Component {
             const mask = new paper.Shape.Rectangle(getRaster().getBounds());
             mask.guide = true;
             mask.locked = true;
-            mask.setPosition(CENTER);
+            mask.setPosition(BASE.CENTER);
             mask.clipMask = true;
 
             const imgElement = new Image();
@@ -163,12 +162,12 @@ class PaperCanvas extends React.Component {
 
                 getRaster().drawImage(
                     imgElement,
-                    (ART_BOARD_WIDTH / 2) - rotationCenterX,
-                    (ART_BOARD_HEIGHT / 2) - rotationCenterY);
+                    (BASE.ART_BOARD_WIDTH / 2) - rotationCenterX,
+                    (BASE.ART_BOARD_HEIGHT / 2) - rotationCenterY);
                 getRaster().drawImage(
                     imgElement,
-                    (ART_BOARD_WIDTH / 2) - rotationCenterX,
-                    (ART_BOARD_HEIGHT / 2) - rotationCenterY);
+                    (BASE.ART_BOARD_WIDTH / 2) - rotationCenterX,
+                    (BASE.ART_BOARD_HEIGHT / 2) - rotationCenterY);
 
                 this.maybeZoomToFit(true /* isBitmap */);
                 performSnapshot(this.props.undoSnapshot, Formats.BITMAP_SKIP_CONVERT);
@@ -267,9 +266,9 @@ class PaperCanvas extends React.Component {
         mask.locked = true;
         mask.matrix = new paper.Matrix(); // Identity
         // Set the artwork to get clipped at the max costume size
-        mask.size.height = MAX_WORKSPACE_BOUNDS.height;
-        mask.size.width = MAX_WORKSPACE_BOUNDS.width;
-        mask.setPosition(CENTER);
+        mask.size.height = BASE.MAX_WORKSPACE_BOUNDS.height;
+        mask.size.width = BASE.MAX_WORKSPACE_BOUNDS.width;
+        mask.setPosition(BASE.CENTER);
         paper.project.activeLayer.addChild(mask);
         mask.clipMask = true;
 
@@ -287,10 +286,10 @@ class PaperCanvas extends React.Component {
             if (viewBox && viewBox.length >= 2 && !isNaN(viewBox[0]) && !isNaN(viewBox[1])) {
                 rotationPoint = rotationPoint.subtract(viewBox[0], viewBox[1]);
             }
-            item.translate(CENTER.subtract(rotationPoint.multiply(2)));
+            item.translate(BASE.CENTER.subtract(rotationPoint.multiply(2)));
         } else {
             // Center
-            item.translate(CENTER.subtract(itemWidth, itemHeight));
+            item.translate(BASE.CENTER.subtract(itemWidth, itemHeight));
         }
 
         paper.project.activeLayer.insertChild(0, item);
