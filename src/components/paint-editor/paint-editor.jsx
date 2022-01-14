@@ -1,47 +1,46 @@
 import paper from '@scratch/paper';
 import classNames from 'classnames';
-import {defineMessages, injectIntl, intlShape} from 'react-intl';
-import React from 'react';
 import PropTypes from 'prop-types';
-
-import PaperCanvas from '../../containers/paper-canvas.jsx';
-import ScrollableCanvas from '../../containers/scrollable-canvas.jsx';
-
+import React from 'react';
+import {defineMessages, injectIntl, intlShape} from 'react-intl';
 import BitBrushMode from '../../containers/bit-brush-mode.jsx';
+import BitEraserMode from '../../containers/bit-eraser-mode.jsx';
+import BitFillMode from '../../containers/bit-fill-mode.jsx';
 import BitLineMode from '../../containers/bit-line-mode.jsx';
 import BitOvalMode from '../../containers/bit-oval-mode.jsx';
 import BitRectMode from '../../containers/bit-rect-mode.jsx';
-import BitFillMode from '../../containers/bit-fill-mode.jsx';
-import BitEraserMode from '../../containers/bit-eraser-mode.jsx';
 import BitSelectMode from '../../containers/bit-select-mode.jsx';
-import Box from '../box/box.jsx';
-import Button from '../button/button.jsx';
-import ButtonGroup from '../button-group/button-group.jsx';
 import BrushMode from '../../containers/brush-mode.jsx';
 import EraserMode from '../../containers/eraser-mode.jsx';
 import FillColorIndicatorComponent from '../../containers/fill-color-indicator.jsx';
 import FillMode from '../../containers/fill-mode.jsx';
-import InputGroup from '../input-group/input-group.jsx';
-import LineMode from '../../containers/line-mode.jsx';
-import Loupe from '../loupe/loupe.jsx';
 import FixedToolsContainer from '../../containers/fixed-tools.jsx';
+import LineMode from '../../containers/line-mode.jsx';
 import ModeToolsContainer from '../../containers/mode-tools.jsx';
 import OvalMode from '../../containers/oval-mode.jsx';
+import PaperCanvas from '../../containers/paper-canvas.jsx';
 import RectMode from '../../containers/rect-mode.jsx';
 import ReshapeMode from '../../containers/reshape-mode.jsx';
+import ScrollableCanvas from '../../containers/scrollable-canvas.jsx';
 import SelectMode from '../../containers/select-mode.jsx';
 import StrokeColorIndicatorComponent from '../../containers/stroke-color-indicator.jsx';
 import StrokeWidthIndicatorComponent from '../../containers/stroke-width-indicator.jsx';
 import TextMode from '../../containers/text-mode.jsx';
-
 import Formats, {isBitmap, isVector} from '../../lib/format';
-import styles from './paint-editor.css';
-
+import Box from '../box/box.jsx';
+import ButtonGroup from '../button-group/button-group.jsx';
+import Button from '../button/button.jsx';
+import InputGroup from '../input-group/input-group.jsx';
+import Loupe from '../loupe/loupe.jsx';
 import bitmapIcon from './icons/bitmap.svg';
 import zoomInIcon from './icons/zoom-in.svg';
 import zoomOutIcon from './icons/zoom-out.svg';
 import zoomResetIcon from './icons/zoom-reset.svg';
-import themeIcon from './icons/theme.svg';
+import styles from './paint-editor.css';
+
+
+
+
 
 const messages = defineMessages({
     bitmap: {
@@ -300,7 +299,8 @@ const PaintEditorComponent = props => (
                                 />
                             </Button>
                         </ButtonGroup>
-                        <ButtonGroup>
+                        {/* disable Change theme */}
+                        {/* <ButtonGroup>
                             <Button
                                 className={styles.buttonGroupButton}
                                 onClick={props.onChangeTheme}
@@ -312,7 +312,7 @@ const PaintEditorComponent = props => (
                                     src={themeIcon}
                                 />
                             </Button>
-                        </ButtonGroup>
+                        </ButtonGroup> */}
                     </InputGroup>
                 </div>
             </div>
